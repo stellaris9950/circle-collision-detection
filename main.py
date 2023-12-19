@@ -4,19 +4,15 @@ import random
 
 
 # Create walls,only run once
-class Circles:
-    def __init__(self, radius: int, pos: pygame.Vector2, move: pygame.Vector2):
+class Player:
+    def __init__(self, radius: int, pos: pygame.Vector2, move_facotr: pygame.Vector2):
         self.radius = radius
         self.pos = pos
-        self.move = move
+        self.move = pygame.Vector2(move_facotr.x * 10, move_facotr.y * 10)
 
     def moveCircle(self):
         self.pos += self.move
-        if self.pos.x <= 0 or self.pos.x >= 720:
-            self.move.x *= -1
-
-        if self.pos.y <= 0 or self.pos.y >= 540:
-            self.move.y *= -1
+        print(self.pos)
 
 class Food:
     def __init__(self, radius: int, pos: pygame.Vector2):
@@ -71,11 +67,22 @@ createDraw()
 """
 def findMouse(player_pos):
 
-    mouse_pos = pygame.mouse.get_pos()
-
+    mouse_pos = pygame.Vector2(pygame.mouse.get_pos())
     distance = mouse_pos - player_pos
+    total = distance.x + distance.y
+    move_factor = pygame.Vector2(distance.x / total, distance.y / total)
 
-    print(distance)
+
+    # print(mouse_pos)
+
+    if mouse_pos.x < player_pos.x and mouse_pos.y < player_pos.y:
+        move_factor *= -1
+        return move_factor
+    elif mouse_pos.x > player_pos.x and mouse_pos.y > player_pos.y:
+        return move_factor
+    else:
+        return move_factor
+
 
 
 
@@ -99,14 +106,15 @@ while running:
         if event.type == pygame.QUIT:
             running = False
 
+
+
     player_pos = pygame.Vector2(screen.get_width() / 2, screen.get_height() / 2)
 
+    move_factor = findMouse(player_pos)
 
+    player = Player(10, player_pos, move_factor)
 
-
-    findMouse(player_pos)
-
-
+    print(player)
 
 
     # fill the screen with a color to wipe away anything from last frame
@@ -128,12 +136,15 @@ while running:
 
 
     """
-    pygame.draw.rect(screen, "black", [player_pos.x, player_pos.y, 30, 30])
+    player.moveCircle()
+    pygame.draw.circle(screen, "black", player.pos, player.radius)
+
 
     # flip() the display to put your work on screen
     pygame.display.flip()
 
     # limits FPS to 60
+
     # dt is delta time in seconds since last frame, used for framerate-
     # independent physics.
     dt = clock.tick(60) / 1000
