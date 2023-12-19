@@ -73,12 +73,13 @@ def findMouse(player_pos):
     move_factor = pygame.Vector2(distance.x / total, distance.y / total)
 
 
-    # print(mouse_pos)
+    print(distance)
+    print(move_factor)
 
     if mouse_pos.x < player_pos.x and mouse_pos.y < player_pos.y:
         move_factor *= -1
         return move_factor
-    elif mouse_pos.x > player_pos.x and mouse_pos.y > player_pos.y:
+    if mouse_pos.x > player_pos.x and mouse_pos.y > player_pos.y:
         return move_factor
     else:
         return move_factor
@@ -114,7 +115,7 @@ while running:
 
     player = Player(10, player_pos, move_factor)
 
-    print(player)
+    # print(player)
 
 
     # fill the screen with a color to wipe away anything from last frame
