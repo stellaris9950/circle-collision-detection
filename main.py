@@ -1,7 +1,7 @@
 # Import External Librarys
 import pygame
 import random
-
+import math
 
 # Create walls,only run once
 class Player:
@@ -10,10 +10,20 @@ class Player:
         self.pos = pos
         self.move = pygame.Vector2(move_facotr.x * 10, move_facotr.y * 10)
 
-    def moveCircle(self):
-        self.pos += self.move
-        print(self.pos)
 
+    def moveCircle(self, mouse):
+        self.pos += self.move
+        # print(self.pos)
+
+        distance = mouse - self.pos
+
+        displacment = math.sqrt(distance.x **2 + distance.y **2)
+
+        if displacment <= 10:
+            self.pos = mouse
+
+            # self.pos.x = mouse[0]
+            # self.pos.y = mouse[1]
 class Food:
     def __init__(self, radius: int, pos: pygame.Vector2):
         self.radius = radius
@@ -69,20 +79,11 @@ def findMouse(player_pos):
 
     mouse_pos = pygame.Vector2(pygame.mouse.get_pos())
     distance = mouse_pos - player_pos
-    total = distance.x + distance.y
+    total = abs(distance.x) + abs(distance.y)
     move_factor = pygame.Vector2(distance.x / total, distance.y / total)
 
+    return move_factor
 
-    print(distance)
-    print(move_factor)
-
-    if mouse_pos.x < player_pos.x and mouse_pos.y < player_pos.y:
-        move_factor *= -1
-        return move_factor
-    if mouse_pos.x > player_pos.x and mouse_pos.y > player_pos.y:
-        return move_factor
-    else:
-        return move_factor
 
 
 
@@ -99,6 +100,7 @@ circle_movement = 300*dt
 
 lose = False
 win = False
+player_pos = pygame.Vector2(screen.get_width() / 2, screen.get_height() / 2)
 
 while running:
     # poll for events
@@ -109,10 +111,8 @@ while running:
 
 
 
-    player_pos = pygame.Vector2(screen.get_width() / 2, screen.get_height() / 2)
 
     move_factor = findMouse(player_pos)
-
     player = Player(10, player_pos, move_factor)
 
     # print(player)
@@ -137,7 +137,9 @@ while running:
 
 
     """
-    player.moveCircle()
+    mouse_pos = pygame.Vector2(pygame.mouse.get_pos())
+    player.moveCircle(mouse_pos)
+
     pygame.draw.circle(screen, "black", player.pos, player.radius)
 
 
