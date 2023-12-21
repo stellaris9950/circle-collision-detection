@@ -19,12 +19,19 @@ class Player:
         if displacment <= 10:
             self.pos = mouse
 
+    def collisionWithFood(self, food):
+        distance = self.pos - food.pos
+        displacment = math.sqrt(distance.x ** 2 + distance.y ** 2)
+        if displacment <= self.radius:
+            return True
+
+
 
 class Food:
-    def __init__(self, radius: int, pos: pygame.Vector2):
-        self.radius = radius
-        self.pos = pos
-
+    def __init__(self):
+        self.radius = random.randrange(5, 20)
+        self.pos = pygame.Vector2(random.randrange(0, 720), random.randrange(0, 540))
+        self.color = pygame.Vector3(random.randrange(0, 255), random.randrange(0, 255), random.randrange(0, 255))
 
 
 
@@ -42,8 +49,8 @@ def findMouse(player_pos):
 
 food_list = []
 def createFood():
-    print("food created")
-
+    if random.randrange(1, 100) == 5:
+        food_list.append(Food())
 
 
 
@@ -55,8 +62,9 @@ clock = pygame.time.Clock()
 running = True
 dt = 0
 
-
+radius_of_player = 100
 circle_movement = 300*dt
+growth_factor = 0.5
 
 lose = False
 win = False
@@ -70,13 +78,15 @@ while running:
             running = False
 
     # write a function that runs at random  random.randrange in range (sfasd f)
-
+    createFood()
 
     move_factor = findMouse(player_pos)
-    player = Player(100, player_pos, move_factor)
+    player = Player(radius_of_player, player_pos, move_factor)
 
-
-
+    for food in food_list:
+        if player.collisionWithFood(food):
+            food_list.remove(food)
+            radius_of_player += food.radius * growth_factor
 
     # fill the screen with a color to wipe away anything from last frame
     screen.fill("white")
@@ -87,6 +97,11 @@ while running:
     player.moveCircle(mouse_pos)
 
     pygame.draw.circle(screen, "black", player.pos, player.radius)
+
+
+    # draw food
+    for food in food_list:
+        pygame.draw.circle(screen, food.color, food.pos, food.radius)
 
 
     # flip() the display to put your work on screen
